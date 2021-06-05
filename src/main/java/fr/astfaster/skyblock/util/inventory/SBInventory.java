@@ -1,0 +1,125 @@
+package fr.astfaster.skyblock.util.inventory;
+
+import com.avaje.ebean.validation.NotNull;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
+public class SBInventory implements InventoryHolder {
+
+    private final Inventory inventory;
+    private final Player owner;
+    private final String name;
+    private final int size;
+    private final Map<Integer, Consumer<InventoryClickEvent>> clickConsumers;
+
+    public SBInventory(Player owner, String name, int size) {
+        this.owner = owner;
+        this.name = name;
+        this.size = size;
+        this.inventory = Bukkit.createInventory(this, this.size, this.name);
+        this.clickConsumers = new HashMap<>();
+    }
+
+    public SBInventory(Player owner, int size) {
+        this(owner, "", size);
+    }
+
+    public SBInventory(Player owner, String name, InventoryType inventoryType) {
+        this(owner, name, inventoryType.getDefaultSize());
+    }
+
+    public SBInventory(Player owner, InventoryType inventoryType) {
+        this(owner, "", inventoryType.getDefaultSize());
+    }
+
+    public void setItem(int slot, ItemStack itemStack) {
+        this.clickConsumers.remove(slot);
+        this.inventory.setItem(slot, itemStack);
+    }
+
+    public void setItem(int slot, ItemStack itemStack, Consumer<InventoryClickEvent> clickConsumer) {
+        this.setItem(slot, itemStack);
+        if (clickConsumer != null) this.clickConsumers.put(slot, clickConsumer);
+    }
+
+    public void addItem(ItemStack itemStack) {
+        this.setItem(this.inventory.firstEmpty(), itemStack);
+    }
+
+    public void addItem(ItemStack itemStack, Consumer<InventoryClickEvent> clickConsumer) {
+        final int slot = this.inventory.firstEmpty();
+        this.setItem(slot, itemStack);
+        if (clickConsumer != null) this.clickConsumers.put(slot, clickConsumer);
+    }
+
+    public void setVerticalLine(int startSlot, int endSlot, ItemStack itemStack, Consumer<InventoryClickEvent> clickConsumer) {
+        for (int i = startSlot; i <= endSlot; i+= 9) {
+            this.setItem(i, itemStack, clickConsumer);
+        }
+    }
+
+    public void setVerticalLine(int startSlot, int endSlot, ItemStack itemStack) {
+        this.setVerticalLine(startSlot, endSlot, itemStack, null);
+    }
+
+    public void setHorizontalLine(int startSlot, int endSlot, ItemStack itemStack, Consumer<InventoryClickEvent> clickConsumer) {
+        for (int i = startSlot; i <= endSlot; i++) {
+            this.setItem(i, itemStack, clickConsumer);
+        }
+    }
+
+    public void setHorizontalLine(int startSlot, int endSlot, ItemStack itemStack) {
+        this.setHorizontalLine(startSlot, endSlot, itemStack, null);
+    }
+
+    public void setFill(ItemStack itemStack) {
+        for (int i = 0; i <= this.inventory.getSize(); i++) {
+            if (this.inventory.getItem(i) == null) {
+                this.setItem(i, itemStack);
+            }
+        }
+    }
+
+    public void open() {
+        this.owner.openInventory(this.inventory);
+    }
+
+    protected void update() {}
+
+    protected void onOpen(InventoryOpenEvent event){}
+
+    protected void onClose(InventoryCloseEvent event){}
+
+    @Override
+    public Inventory getInventory() {
+        return this.inventory;
+    }
+
+    public Player getOwner() {
+        return this.owner;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public Map<Integer, Consumer<InventoryClickEvent>> getClickConsumers() {
+        return this.clickConsumers;
+    }
+
+}

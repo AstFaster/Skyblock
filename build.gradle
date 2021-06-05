@@ -8,6 +8,12 @@ group 'fr.astfaster'
 version '1.0.0-SNAPSHOT'
 archivesBaseName = 'Skyblock'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 compileJava {
     targetCompatibility = sourceCompatibility = JavaVersion.VERSION_1_8
     options.encoding = StandardCharsets.UTF_8
@@ -15,11 +21,6 @@ compileJava {
 
 repositories {
     mavenCentral()
-    mavenLocal()
-
-    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-
-    maven { url = 'https://oss.sonatype.org/content/groups/public/' }
 }
 
 jar {
@@ -34,4 +35,7 @@ jar {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'redis.clients:jedis:3.6.0'
+    implementation 'org.mongodb:mongo-java-driver:3.12.8'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
 }
