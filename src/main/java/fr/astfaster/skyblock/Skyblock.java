@@ -1,14 +1,23 @@
 package fr.astfaster.skyblock;
 
 import com.mongodb.client.MongoDatabase;
+import fr.astfaster.skyblock.command.IslandCommand;
 import fr.astfaster.skyblock.configuration.SBConfiguration;
 import fr.astfaster.skyblock.configuration.SBConfigurationManager;
+import fr.astfaster.skyblock.island.SBIslandManager;
+import fr.astfaster.skyblock.listener.PlayerListener;
 import fr.astfaster.skyblock.mongodb.MongoDBConnection;
 import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.redis.RedisConnection;
 import fr.astfaster.skyblock.util.inventory.SBInventoryManager;
 import fr.astfaster.skyblock.util.item.SBItemManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Skyblock extends JavaPlugin {
 
@@ -26,6 +35,9 @@ public class Skyblock extends JavaPlugin {
     /** Player */
     private SBPlayerManager playerManager;
 
+    /** Island */
+    private SBIslandManager islandManager;
+
     /** Util */
     private SBItemManager itemManager;
     private SBInventoryManager inventoryManager;
@@ -40,11 +52,39 @@ public class Skyblock extends JavaPlugin {
         this.redisConnection = new RedisConnection(this.configuration.getRedisConfiguration().getRedisIp(), this.configuration.getRedisConfiguration().getRedisPort(), this.configuration.getRedisConfiguration().getRedisPassword());
 
         this.playerManager = new SBPlayerManager(this);
+
+        this.islandManager = new SBIslandManager(this);
+
+        this.islandManager.loadIslands();
+
+        this.registerListeners();
+        this.registerCommands();
+    }
+
+    private void registerListeners() {
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+    }
+
+    private void registerCommands() {
+        CommandMap commandMap = null;
+        try {
+            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+
+            bukkitCommandMap.setAccessible(true);
+
+            commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        if (commandMap != null) {
+            commandMap.register("is", new IslandCommand(this,"is", "Island command", "/is <promote|kick|invite|disband>", Collections.singletonList("island")));
+        }
     }
 
     @Override
     public void onDisable() {
-
+        this.islandManager.saveIslands();
     }
 
     public SBConfigurationManager getConfigurationManager() {
@@ -69,6 +109,10 @@ public class Skyblock extends JavaPlugin {
 
     public SBPlayerManager getPlayerManager() {
         return this.playerManager;
+    }
+
+    public SBIslandManager getIslandManager() {
+        return this.islandManager;
     }
 
     public SBItemManager getItemManager() {

@@ -52,6 +52,7 @@ public class SBItemManager {
                 if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Player) {
                     execute(event);
                 }
+                event.setCancelled(true);
             }
         });
         this.listeners.add(new Listener() {

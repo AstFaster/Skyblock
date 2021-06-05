@@ -7,6 +7,11 @@ import com.mongodb.client.model.ReturnDocument;
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.util.References;
 import org.bson.Document;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -15,6 +20,8 @@ import java.util.UUID;
 
 public class SBPlayerManager {
 
+    private final Map<String, SBPlayer> players;
+
     private final MongoCollection<SBPlayer> playersCollection;
 
     private final Skyblock skyblock;
@@ -22,6 +29,50 @@ public class SBPlayerManager {
     public SBPlayerManager(Skyblock skyblock) {
         this.skyblock = skyblock;
         this.playersCollection = this.skyblock.getSkyblockDatabase().getCollection("players", SBPlayer.class);
+        this.players = new HashMap<>();
+    }
+
+    /**
+     * Handle player
+     */
+
+    public void handleLogin(Player player) {
+        SBPlayer sbPlayer = this.getPlayerFromMongo(player.getUniqueId());
+
+        if (sbPlayer == null) {
+            sbPlayer = new SBPlayer(player.getUniqueId().toString(), player.getName(), "", 100.0F);
+
+            this.giveStartingInventory(player);
+        }
+
+        this.sendPlayerToRedis(sbPlayer);
+        this.players.put(sbPlayer.getUuid(), sbPlayer);
+    }
+
+    private void giveStartingInventory(Player player) {
+        final PlayerInventory inventory = player.getInventory();
+
+        inventory.setItem(0, new ItemStack(Material.STONE_SWORD));
+        inventory.setItem(1, new ItemStack(Material.STONE_AXE));
+        inventory.setItem(2, new ItemStack(Material.STONE_PICKAXE));
+        inventory.setItem(4, new ItemStack(Material.COOKED_BEEF, 32));
+
+        inventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
+        inventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+        inventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+        inventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+    }
+
+    public void handleLogout(Player player) {
+        final SBPlayer sbPlayer = this.getPlayerFromRedis(player.getUniqueId());
+
+        this.removePlayerFromRedis(sbPlayer);
+
+        if (this.getPlayerFromMongo(player.getUniqueId()) != null) {
+            this.updatePlayerInMongo(sbPlayer);
+        } else {
+            this.sendPlayerToMongo(sbPlayer);
+        }
     }
 
     /**
@@ -84,4 +135,7 @@ public class SBPlayerManager {
         return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Float.parseFloat(values.get("money")));
     }
 
+    public Map<String, SBPlayer> getPlayers() {
+        return this.players;
+    }
 }
