@@ -75,4 +75,12 @@ public class SBIsland {
     public void setMembers(List<SBIslandMember> members) {
         this.members = members;
     }
+
+    public SBIslandMember getIslandMemberById(String uuid) {
+        for (SBIslandMember member : this.members) {
+            if (member.getUuid().equals(uuid)) return member;
+        }
+        return null;
+    }
+
 }

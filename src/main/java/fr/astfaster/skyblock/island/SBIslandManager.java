@@ -16,6 +16,8 @@ import java.util.*;
 
 public class SBIslandManager {
 
+    public final int maxMembers = 25;
+
     private final List<String> islands;
 
     private final MongoCollection<SBIsland> islandsCollection;
@@ -31,6 +33,8 @@ public class SBIslandManager {
     /** Manage */
 
     public void createIsland(SBIsland island) {
+        this.islands.add(island.getUuid());
+
         this.sendIslandToRedis(island);
         this.sendIslandToMongo(island);
     }
@@ -38,15 +42,21 @@ public class SBIslandManager {
     public void loadIslands() {
         final FindIterable<SBIsland> islands = this.islandsCollection.find();
 
-        for (SBIsland island : islands) this.islands.add(island.getUuid());
+        for (SBIsland island : islands) {
+            this.islands.add(island.getUuid());
+            this.sendIslandToRedis(island);
+        }
     }
 
     public void saveIslands() {
         for (String islandId : this.islands) {
             final SBIsland island = this.getIslandFromRedis(islandId);
+
             this.updateIslandInMongo(island);
             this.removeIslandFromRedis(island);
         }
+
+        this.islands.clear();
     }
 
     /**
@@ -86,13 +96,14 @@ public class SBIslandManager {
         final String hash = References.NAME.toLowerCase() + ":" + island.getUuid() + ":";
 
         for (Map.Entry<String, String> entry : this.getValuesFromIsland(island).entrySet()) jedis.hdel(hash, entry.getKey());
+        for (Map.Entry<String, String> entry : this.getMembersValuesFromIsland(island).entrySet()) jedis.hdel(hash + "members:", entry.getKey());
     }
 
     public SBIsland getIslandFromRedis(String uuid) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
         final String hash = References.NAME.toLowerCase() + ":" + uuid + ":";
 
-        return this.getIslandFromValue(jedis.hgetAll(hash), jedis.hgetAll(hash + "members"));
+        return this.getIslandFromValue(jedis.hgetAll(hash), jedis.hgetAll(hash + "members:"));
     }
 
     private Map<String, String> getValuesFromIsland(SBIsland island) {

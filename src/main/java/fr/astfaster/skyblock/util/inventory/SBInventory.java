@@ -83,7 +83,7 @@ public class SBInventory implements InventoryHolder {
     }
 
     public void setFill(ItemStack itemStack) {
-        for (int i = 0; i <= this.inventory.getSize(); i++) {
+        for (int i = 0; i < this.inventory.getSize(); i++) {
             if (this.inventory.getItem(i) == null) {
                 this.setItem(i, itemStack);
             }

@@ -16,7 +16,6 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Skyblock extends JavaPlugin {
@@ -87,6 +86,7 @@ public class Skyblock extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.playerManager.savePlayers();
         this.islandManager.saveIslands();
     }
 

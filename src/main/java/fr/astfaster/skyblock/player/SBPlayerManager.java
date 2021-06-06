@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SBPlayerManager {
+
+    private final List<String> players;
 
     private final MongoCollection<SBPlayer> playersCollection;
 
@@ -26,6 +26,27 @@ public class SBPlayerManager {
     public SBPlayerManager(Skyblock skyblock) {
         this.skyblock = skyblock;
         this.playersCollection = this.skyblock.getSkyblockDatabase().getCollection("players", SBPlayer.class);
+        players = new ArrayList<>();
+    }
+
+    /**
+     * Manage
+     */
+
+    public void savePlayers() {
+        for (String playerId : this.players) {
+            final SBPlayer player = this.getPlayerFromRedis(UUID.fromString(playerId));
+
+            if (this.getPlayerFromMongo(UUID.fromString(playerId)) != null) {
+                this.updatePlayerInMongo(player);
+            } else {
+                this.sendPlayerToMongo(player);
+            }
+
+            this.removePlayerFromRedis(player);
+        }
+
+        this.players.clear();
     }
 
     /**
@@ -42,6 +63,8 @@ public class SBPlayerManager {
         }
 
         this.sendPlayerToRedis(sbPlayer);
+
+        this.players.add(sbPlayer.getUuid());
     }
 
     private void giveStartingInventory(Player player) {
@@ -68,6 +91,8 @@ public class SBPlayerManager {
         } else {
             this.sendPlayerToMongo(sbPlayer);
         }
+
+        this.players.remove(sbPlayer.getUuid());
     }
 
     /**

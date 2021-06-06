@@ -9,12 +9,8 @@ import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.ItemColor;
 import fr.astfaster.skyblock.util.item.SBItemBuilder;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -27,7 +23,10 @@ import java.util.function.Consumer;
 
 public class SBCreateIslandInventory extends SBInventory {
 
+    private boolean nameEntered = false;
+
     private String islandName;
+    private String islandDescription;
 
     private final Skyblock skyblock;
 
@@ -62,17 +61,25 @@ public class SBCreateIslandInventory extends SBInventory {
 
                 @EventHandler
                 public void onChat(AsyncPlayerChatEvent e) {
-                    if (!e.getMessage().equals("cancel")) {
-                        islandName = e.getMessage();
+                    e.setCancelled(true);
 
-                        confirm(player);
+                    if (!e.getMessage().equals("cancel")) {
+                        if (!nameEntered) {
+                            islandName = e.getMessage();
+
+                            player.sendMessage(ChatColor.GOLD + "Veuillez rentrer la description de votre île (" + ChatColor.RED + "cancel " + ChatColor.GOLD + "pour annuler).");
+
+                            nameEntered = true;
+                        } else {
+                            islandDescription = e.getMessage();
+
+                            confirm(player);
+
+                            HandlerList.unregisterAll(this);
+                        }
                     } else {
                         player.sendMessage(ChatColor.GOLD + "Création de votre île annulée.");
                     }
-
-                    e.setCancelled(true);
-
-                    HandlerList.unregisterAll(this);
                 }
 
             }, skyblock);
@@ -80,7 +87,13 @@ public class SBCreateIslandInventory extends SBInventory {
     }
 
     private void confirm(Player player) {
-        player.sendMessage(ChatColor.GOLD + "Vote île s'appellera: " + ChatColor.WHITE + this.islandName + ChatColor.GOLD + ". Voulez-vous continuer ?");
+        final String header = ChatColor.GOLD + "" + ChatColor.UNDERLINE + "Les informations de votre île seront :\n";
+        final String separator = "§r\n";
+        final String name = ChatColor.GOLD + "Nom : " + ChatColor.YELLOW + this.islandName + "\n";
+        final String description = ChatColor.GOLD + "Description : " + ChatColor.YELLOW + this.islandDescription + "\n";
+        final String confirm = ChatColor.GOLD + "Voulez-vous continuer ?";
+
+        player.sendMessage(header + separator + name + description + separator + confirm);
 
         final SBInventory confirmInventory = new SBInventory(player, "Confirmer la création de l'île", 3 * 9);
 
@@ -107,7 +120,7 @@ public class SBCreateIslandInventory extends SBInventory {
 
             player.closeInventory();
 
-            final SBIsland island = new SBIsland("", this.islandName, "" , 0.0F, System.currentTimeMillis());
+            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, System.currentTimeMillis());
             final String islandId = "island-" + UUID.randomUUID().toString().split("-")[0];
 
             island.setUuid(islandId);

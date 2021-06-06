@@ -1,5 +1,7 @@
 package fr.astfaster.skyblock.util.item;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Event;
@@ -10,6 +12,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -70,6 +74,25 @@ public class SBItemBuilder {
 
         this.itemStack.setItemMeta(skullMeta);
 
+        return this;
+    }
+
+    public SBItemBuilder withCustomHead(String name) {
+        try {
+            final SkullMeta skullMeta = (SkullMeta) this.itemMeta;
+            final GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+            profile.getProperties().put("textures", new Property("textures", name));
+
+            final Field profileField = skullMeta.getClass().getDeclaredField("profile");
+
+            profileField.setAccessible(true);
+            profileField.set(skullMeta, profile);
+
+            this.itemStack.setItemMeta(skullMeta);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
