@@ -1,7 +1,6 @@
 package fr.astfaster.skyblock.island;
 
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -17,7 +16,7 @@ import java.util.*;
 
 public class SBIslandManager {
 
-    private final Map<String, SBIsland> islands;
+    private final List<String> islands;
 
     private final MongoCollection<SBIsland> islandsCollection;
 
@@ -26,7 +25,7 @@ public class SBIslandManager {
     public SBIslandManager(Skyblock skyblock) {
         this.skyblock = skyblock;
         this.islandsCollection = this.skyblock.getSkyblockDatabase().getCollection("islands", SBIsland.class);
-        this.islands = new HashMap<>();
+        this.islands = new ArrayList<>();
     }
 
     /** Manage */
@@ -39,12 +38,13 @@ public class SBIslandManager {
     public void loadIslands() {
         final FindIterable<SBIsland> islands = this.islandsCollection.find();
 
-        for (SBIsland island : islands) this.islands.put(island.getUuid(), island);
+        for (SBIsland island : islands) this.islands.add(island.getUuid());
     }
 
     public void saveIslands() {
-        for (SBIsland island : this.islands.values()) {
-            this.updateIslandInMongo(this.getIslandFromRedis(island.getUuid()));
+        for (String islandId : this.islands) {
+            final SBIsland island = this.getIslandFromRedis(islandId);
+            this.updateIslandInMongo(island);
             this.removeIslandFromRedis(island);
         }
     }
@@ -140,11 +140,5 @@ public class SBIslandManager {
         }
 
         return members;
-    }
-
-    /** Getters */
-
-    public Map<String, SBIsland> getIslands() {
-        return this.islands;
     }
 }

@@ -10,12 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SBInventoryManager implements Listener {
 
-    private final JavaPlugin plugin;
-
     public SBInventoryManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.LOW)

@@ -28,7 +28,8 @@ public class IslandCommand extends Command {
                 if (!sbPlayer.getIsland().isEmpty()) {
 
                 } else {
-                    player.openInventory(new SBCreateIslandInventory(player).getInventory());
+                    final SBCreateIslandInventory createIslandInventory = new SBCreateIslandInventory(this.skyblock, player);
+                    createIslandInventory.open();
                 }
             }
         }

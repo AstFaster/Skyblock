@@ -55,6 +55,9 @@ public class Skyblock extends JavaPlugin {
 
         this.islandManager = new SBIslandManager(this);
 
+        this.itemManager = new SBItemManager(this);
+        this.inventoryManager = new SBInventoryManager(this);
+
         this.islandManager.loadIslands();
 
         this.registerListeners();

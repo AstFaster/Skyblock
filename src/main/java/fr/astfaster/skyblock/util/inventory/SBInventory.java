@@ -1,6 +1,5 @@
 package fr.astfaster.skyblock.util.inventory;
 
-import com.avaje.ebean.validation.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

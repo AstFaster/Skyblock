@@ -9,7 +9,6 @@ import fr.astfaster.skyblock.util.References;
 import org.bson.Document;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import redis.clients.jedis.Jedis;
@@ -20,8 +19,6 @@ import java.util.UUID;
 
 public class SBPlayerManager {
 
-    private final Map<String, SBPlayer> players;
-
     private final MongoCollection<SBPlayer> playersCollection;
 
     private final Skyblock skyblock;
@@ -29,7 +26,6 @@ public class SBPlayerManager {
     public SBPlayerManager(Skyblock skyblock) {
         this.skyblock = skyblock;
         this.playersCollection = this.skyblock.getSkyblockDatabase().getCollection("players", SBPlayer.class);
-        this.players = new HashMap<>();
     }
 
     /**
@@ -46,7 +42,6 @@ public class SBPlayerManager {
         }
 
         this.sendPlayerToRedis(sbPlayer);
-        this.players.put(sbPlayer.getUuid(), sbPlayer);
     }
 
     private void giveStartingInventory(Player player) {
@@ -135,7 +130,4 @@ public class SBPlayerManager {
         return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Float.parseFloat(values.get("money")));
     }
 
-    public Map<String, SBPlayer> getPlayers() {
-        return this.players;
-    }
 }
