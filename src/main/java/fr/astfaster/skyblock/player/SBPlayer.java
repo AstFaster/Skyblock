@@ -8,11 +8,11 @@ public class SBPlayer {
     private String uuid;
     private String name;
     private String island;
-    private float money;
+    private double money;
 
     public SBPlayer() {}
 
-    public SBPlayer(String uuid, String name, String island, float money) {
+    public SBPlayer(String uuid, String name, String island, double money) {
         this.uuid = uuid;
         this.name = name;
         this.island = island;
@@ -43,11 +43,11 @@ public class SBPlayer {
         this.island = island;
     }
 
-    public float getMoney() {
+    public double getMoney() {
         return this.money;
     }
 
-    public void setMoney(float money) {
+    public void setMoney(double money) {
         this.money = money;
     }
 

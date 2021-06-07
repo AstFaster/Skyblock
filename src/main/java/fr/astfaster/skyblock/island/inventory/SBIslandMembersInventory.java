@@ -10,6 +10,7 @@ import fr.astfaster.skyblock.util.item.SBItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,10 +41,12 @@ public class SBIslandMembersInventory extends SBInventory {
         int i = 0;
         for (SBIslandMember member : this.island.getMembers()) {
             final UUID playerUuid = UUID.fromString(member.getUuid());
+            final OfflinePlayer player = Bukkit.getOfflinePlayer(playerUuid);
+            final String online = player.isOnline() ? ChatColor.GREEN + "En ligne" : ChatColor.RED + "Hors-ligne";
 
             this.setItem(i, new SBItemBuilder(Material.SKULL_ITEM, 1, 3)
-                    .withName(ChatColor.YELLOW + Bukkit.getOfflinePlayer(playerUuid).getName())
-                    .withLore(ChatColor.YELLOW + "Grade : " + ChatColor.GOLD + member.getMemberType().getName())
+                    .withName(ChatColor.YELLOW + player.getName())
+                    .withLore(ChatColor.YELLOW + "Grade : " + ChatColor.GOLD + member.getMemberType().getName(), ChatColor.YELLOW + "Status : " + online)
                     .withSkullOwner(playerUuid)
                     .toItemStack());
 

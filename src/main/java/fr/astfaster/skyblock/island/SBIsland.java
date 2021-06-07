@@ -12,14 +12,14 @@ public class SBIsland {
     private String uuid;
     private String name;
     private String description;
-    private float money;
+    private double money;
     @BsonProperty(value = "created_date")
     private long createdDate;
     private List<SBIslandMember> members;
 
     public SBIsland() {}
 
-    public SBIsland(String uuid, String name, String description, float money, long createdDate) {
+    public SBIsland(String uuid, String name, String description, double money, long createdDate) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;
@@ -52,11 +52,11 @@ public class SBIsland {
         this.description = description;
     }
 
-    public float getMoney() {
+    public double getMoney() {
         return this.money;
     }
 
-    public void setMoney(float money) {
+    public void setMoney(double money) {
         this.money = money;
     }
 

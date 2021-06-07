@@ -17,6 +17,7 @@ import java.util.*;
 
 public class SBPlayerManager {
 
+    private final Map<String, String> islandInvitations;
     private final List<String> players;
 
     private final MongoCollection<SBPlayer> playersCollection;
@@ -26,7 +27,8 @@ public class SBPlayerManager {
     public SBPlayerManager(Skyblock skyblock) {
         this.skyblock = skyblock;
         this.playersCollection = this.skyblock.getSkyblockDatabase().getCollection("players", SBPlayer.class);
-        players = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.islandInvitations = new HashMap<>();
     }
 
     /**
@@ -155,4 +157,7 @@ public class SBPlayerManager {
         return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Float.parseFloat(values.get("money")));
     }
 
+    public Map<String, String> getIslandInvitations() {
+        return this.islandInvitations;
+    }
 }
