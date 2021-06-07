@@ -2,6 +2,7 @@ package fr.astfaster.skyblock;
 
 import com.mongodb.client.MongoDatabase;
 import fr.astfaster.skyblock.command.IslandCommand;
+import fr.astfaster.skyblock.command.MoneyCommand;
 import fr.astfaster.skyblock.configuration.SBConfiguration;
 import fr.astfaster.skyblock.configuration.SBConfigurationManager;
 import fr.astfaster.skyblock.island.SBIslandManager;
@@ -80,7 +81,8 @@ public class Skyblock extends JavaPlugin {
         }
 
         if (commandMap != null) {
-            commandMap.register("is", new IslandCommand(this,"is", "Island command", "/is <promote|kick|invite|disband>", Collections.singletonList("island")));
+            commandMap.register("is", new IslandCommand(this));
+            commandMap.register("money", new MoneyCommand(this));
         }
     }
 

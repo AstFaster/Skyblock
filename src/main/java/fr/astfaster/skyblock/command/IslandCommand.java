@@ -17,10 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Locale;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,8 +25,8 @@ public class IslandCommand extends Command {
 
     private final Skyblock skyblock;
 
-    public IslandCommand(Skyblock skyblock, String name, String description, String usageMessage, List<String> aliases) {
-        super(name, description, usageMessage, aliases);
+    public IslandCommand(Skyblock skyblock) {
+        super("is", "Island command", "/is <promote|kick|invite|disband>", Collections.singletonList("island"));
         this.skyblock = skyblock;
     }
 
