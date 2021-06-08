@@ -1,7 +1,6 @@
 package fr.astfaster.skyblock.command;
 
 import fr.astfaster.skyblock.Skyblock;
-import fr.astfaster.skyblock.island.SBIsland;
 import fr.astfaster.skyblock.player.SBPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
