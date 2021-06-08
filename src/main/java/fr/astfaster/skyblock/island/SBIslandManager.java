@@ -136,7 +136,7 @@ public class SBIslandManager {
         sbIsland.setUuid(values.get("uuid"));
         sbIsland.setName(new String(decoder.decode(values.get("name"))));
         sbIsland.setDescription(new String(decoder.decode(values.get("description"))));
-        sbIsland.setMoney(Float.parseFloat(values.get("money")));
+        sbIsland.setMoney(Double.parseDouble(values.get("money")));
         sbIsland.setCreatedDate(Long.parseLong(values.get("createdDate")));
         sbIsland.setMembers(this.getMembersFromValue(membersValues));
 

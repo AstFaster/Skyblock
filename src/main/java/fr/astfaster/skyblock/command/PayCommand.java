@@ -3,12 +3,14 @@ package fr.astfaster.skyblock.command;
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.player.SBPlayer;
 import fr.astfaster.skyblock.player.SBPlayerManager;
+import fr.astfaster.skyblock.util.MoneyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -30,30 +32,35 @@ public class PayCommand extends Command {
                 final Player target = Bukkit.getPlayer(args[0]);
 
                 if (target != null) {
+
+                    if (target.getUniqueId().equals(player.getUniqueId())) {
+                        sender.sendMessage(ChatColor.RED + "Vous ne pouvez pas vous auto-pay !");
+                        return true;
+                    }
+
                     final SBPlayerManager playerManager = this.skyblock.getPlayerManager();
                     final SBPlayer sbPlayer = playerManager.getPlayerFromRedis(player.getUniqueId());
-                    final SBPlayer targetSbPlayer = playerManager.getPlayerFromMongo(target.getUniqueId());
-                    final DecimalFormat decimalFormat = new DecimalFormat("#.0");
+                    final SBPlayer targetSbPlayer = playerManager.getPlayerFromRedis(target.getUniqueId());
 
-                    decimalFormat.setMaximumFractionDigits(1);
-                    decimalFormat.setMinimumFractionDigits(1);
-                    decimalFormat.setDecimalSeparatorAlwaysShown(true);
+                    try {
+                        final double amount = MoneyUtils.roundMoney(args[1]);
 
-                    final String amountString = decimalFormat.format(Double.parseDouble(args[1]));
-                    final double amount = Double.parseDouble(amountString);
+                        if (sbPlayer.getMoney() >= amount) {
+                            sbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(sbPlayer.getMoney() - amount)));
+                            targetSbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(targetSbPlayer.getMoney() + amount)));
 
-                    if (sbPlayer.getMoney() >= amount) {
-                        sbPlayer.setMoney(sbPlayer.getMoney() - amount);
-                        targetSbPlayer.setMoney(targetSbPlayer.getMoney() + amount);
+                            playerManager.sendPlayerToRedis(sbPlayer);
+                            playerManager.sendPlayerToRedis(targetSbPlayer);
 
-                        playerManager.sendPlayerToRedis(sbPlayer);
-                        playerManager.sendPlayerToRedis(targetSbPlayer);
-
-                        player.sendMessage(ChatColor.WHITE + "" + amount + "$ " + ChatColor.GREEN + "ont été envoyé à " + ChatColor.WHITE + target.getDisplayName() + ChatColor.GREEN + ".");
-                        target.sendMessage(ChatColor.GREEN + "Tu as reçu " + ChatColor.WHITE + amount + "$ " + ChatColor.GREEN + "de la part de " + ChatColor.WHITE + player.getDisplayName() + ChatColor.GREEN + ".");
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire !");
+                            player.sendMessage(ChatColor.WHITE + "" + amount + "$ " + ChatColor.GREEN + "ont été envoyé à " + ChatColor.WHITE + target.getDisplayName() + ChatColor.GREEN + ".");
+                            target.sendMessage(ChatColor.GREEN + "Tu as reçu " + ChatColor.WHITE + amount + "$ " + ChatColor.GREEN + "de la part de " + ChatColor.WHITE + player.getDisplayName() + ChatColor.GREEN + ".");
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire !");
+                        }
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + "'" + args[1] + "' n'est pas un nombre valide !");
                     }
+
                 } else {
                     player.sendMessage(ChatColor.RED + "Impossible de trouver un joueur appelé '" + args[1] + "' !");
                 }

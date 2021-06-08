@@ -6,6 +6,7 @@ import fr.astfaster.skyblock.island.inventory.SBIslandInventory;
 import fr.astfaster.skyblock.island.member.SBIslandMember;
 import fr.astfaster.skyblock.island.member.SBIslandMemberType;
 import fr.astfaster.skyblock.player.SBPlayer;
+import fr.astfaster.skyblock.util.MoneyUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -16,6 +17,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Map;
@@ -295,26 +297,23 @@ public class IslandCommand extends Command {
 
         if (!sbPlayer.getIsland().isEmpty()) {
             final SBIsland island = this.skyblock.getIslandManager().getIslandFromRedis(sbPlayer.getIsland());
-            final DecimalFormat decimalFormat = new DecimalFormat("#.0");
 
-            decimalFormat.setMaximumFractionDigits(1);
-            decimalFormat.setMinimumFractionDigits(1);
-            decimalFormat.setDecimalSeparatorAlwaysShown(true);
+            try {
+                final double amount = MoneyUtils.roundMoney(amountString);
 
-            amountString = decimalFormat.format(Double.parseDouble(amountString));
+                if (sbPlayer.getMoney() >= amount) {
+                    sbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(sbPlayer.getMoney() - amount)));
+                    island.setMoney(MoneyUtils.roundMoney(String.valueOf(island.getMoney() + amount)));
 
-            final double amount = Double.parseDouble(amountString.replace(",", "."));
+                    this.skyblock.getPlayerManager().sendPlayerToRedis(sbPlayer);
+                    this.skyblock.getIslandManager().sendIslandToRedis(island);
 
-            if (sbPlayer.getMoney() >= amount) {
-                sbPlayer.setMoney(sbPlayer.getMoney() - amount);
-                island.setMoney(island.getMoney() + amount);
-
-                this.skyblock.getPlayerManager().sendPlayerToRedis(sbPlayer);
-                this.skyblock.getIslandManager().sendIslandToRedis(island);
-
-                player.sendMessage(ChatColor.GREEN + "Tu viens d'ajouter " + ChatColor.WHITE + amount + "$ " + ChatColor.GREEN + "à l'argent de ton île.");
-            } else {
-                player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire.");
+                    player.sendMessage(ChatColor.GREEN + "Tu viens d'ajouter " + ChatColor.WHITE + amount + "$ " + ChatColor.GREEN + "à l'argent de ton île.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire.");
+                }
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED +  "'" + amountString + "' n'est pas un nombre valide !");
             }
 
         } else {

@@ -154,7 +154,7 @@ public class SBPlayerManager {
     }
 
     private SBPlayer getPlayerFromValue(Map<String, String> values) {
-        return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Float.parseFloat(values.get("money")));
+        return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Double.parseDouble(values.get("money")));
     }
 
     public Map<String, String> getIslandInvitations() {
