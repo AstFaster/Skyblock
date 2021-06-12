@@ -34,7 +34,9 @@ public class SBIslandMembersInventory extends SBInventory {
 
         this.addGoBackItem();
 
-        this.setFill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+        this.setFill(new SBItemBuilder(Material.STAINED_GLASS_PANE, 1, 15)
+                .withName(" ")
+                .toItemStack());
     }
 
     private void addMembersItems() {

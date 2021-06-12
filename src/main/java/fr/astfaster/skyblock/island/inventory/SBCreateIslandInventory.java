@@ -2,6 +2,7 @@ package fr.astfaster.skyblock.island.inventory;
 
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.island.SBIsland;
+import fr.astfaster.skyblock.island.bank.SBBankSerializer;
 import fr.astfaster.skyblock.island.member.SBIslandMember;
 import fr.astfaster.skyblock.island.member.SBIslandMemberType;
 import fr.astfaster.skyblock.player.SBPlayer;
@@ -9,6 +10,7 @@ import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.ItemColor;
 import fr.astfaster.skyblock.util.item.SBItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +19,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -47,6 +50,10 @@ public class SBCreateIslandInventory extends SBInventory {
                 .withColor(ItemColor.RED)
                 .toItemStack(), this.no()
         );
+
+        this.setFill(new SBItemBuilder(Material.STAINED_GLASS_PANE, 1, 15)
+                .withName(" ")
+                .toItemStack());
     }
 
     private Consumer<InventoryClickEvent> yes() {
@@ -111,6 +118,10 @@ public class SBCreateIslandInventory extends SBInventory {
                 .toItemStack(), this.no()
         );
 
+        confirmInventory.setFill(new SBItemBuilder(Material.STAINED_GLASS_PANE, 1, 15)
+                .withName(" ")
+                .toItemStack());
+
         confirmInventory.open();
     }
 
@@ -120,7 +131,9 @@ public class SBCreateIslandInventory extends SBInventory {
 
             player.closeInventory();
 
-            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, System.currentTimeMillis());
+            final Inventory bank = Bukkit.createInventory(player, 9, ChatColor.RED + "Banque de l'île");
+            final String bankEncoded = SBBankSerializer.bankToString(bank);
+            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, bankEncoded, System.currentTimeMillis());
             final String islandId = "island-" + UUID.randomUUID().toString().split("-")[0];
 
             island.setUuid(islandId);

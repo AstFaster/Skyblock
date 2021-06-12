@@ -1,19 +1,21 @@
 package fr.astfaster.skyblock.util;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 public class MoneyUtils {
 
     public static double roundMoney(String amountString) {
-        final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        final String[] splitedNumber = amountString.split(",");
+        final String baseNumber = splitedNumber[0];
 
-        decimalFormat.setRoundingMode(RoundingMode.CEILING);
-        decimalFormat.setDecimalSeparatorAlwaysShown(true);
+        String decimal = "0";
+        if (splitedNumber.length > 1) {
+            decimal = splitedNumber[1];
+            if (decimal.length() > 2) {
+                decimal = decimal.substring(0, decimal.length() - 2);
+            }
+        }
 
-        amountString = decimalFormat.format(Double.parseDouble(amountString));
 
-        return Double.parseDouble(amountString.replace(",", "."));
+        return Double.parseDouble(baseNumber + "." + decimal);
     }
 
 }

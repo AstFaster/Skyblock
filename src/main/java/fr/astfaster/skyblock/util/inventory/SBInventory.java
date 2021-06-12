@@ -16,6 +16,8 @@ import java.util.function.Consumer;
 
 public class SBInventory implements InventoryHolder {
 
+    private boolean cancelClickEvent = true;
+
     private final Inventory inventory;
     private final Player owner;
     private final String name;
@@ -121,4 +123,11 @@ public class SBInventory implements InventoryHolder {
         return this.clickConsumers;
     }
 
+    public boolean isCancelClickEvent() {
+        return this.cancelClickEvent;
+    }
+
+    public void setCancelClickEvent(boolean cancelClickEvent) {
+        this.cancelClickEvent = cancelClickEvent;
+    }
 }

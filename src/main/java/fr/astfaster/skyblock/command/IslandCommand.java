@@ -193,25 +193,30 @@ public class IslandCommand extends Command {
         if (islandInvitation.containsKey(sbPlayer.getUuid())) {
             final SBIsland island = this.skyblock.getIslandManager().getIslandFromRedis(islandInvitation.get(sbPlayer.getUuid()));
 
-            island.getMembers().add(new SBIslandMember(sbPlayer.getUuid(), SBIslandMemberType.NEW));
-            sbPlayer.setIsland(island.getUuid());
+            if (island.getMembers().size() < 25) {
+                island.getMembers().add(new SBIslandMember(sbPlayer.getUuid(), SBIslandMemberType.NEW));
+                sbPlayer.setIsland(island.getUuid());
 
-            this.skyblock.getIslandManager().sendIslandToRedis(island);
-            this.skyblock.getPlayerManager().sendPlayerToRedis(sbPlayer);
+                this.skyblock.getIslandManager().sendIslandToRedis(island);
+                this.skyblock.getPlayerManager().sendPlayerToRedis(sbPlayer);
 
-            islandInvitation.remove(sbPlayer.getUuid());
+                islandInvitation.remove(sbPlayer.getUuid());
 
-            for (SBIslandMember member : island.getMembers()) {
-                final Player p = Bukkit.getPlayer(UUID.fromString(member.getUuid()));
+                for (SBIslandMember member : island.getMembers()) {
+                    final Player p = Bukkit.getPlayer(UUID.fromString(member.getUuid()));
 
-                if (p.isOnline()) {
-                    if (!p.getUniqueId().toString().equals(sbPlayer.getUuid())) {
-                        p.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GOLD + " a rejoint votre île !");
-                    } else {
-                        p.sendMessage(ChatColor.GOLD + "Tu as rejoint l'île : " + ChatColor.YELLOW + island.getName());
+                    if (p.isOnline()) {
+                        if (!p.getUniqueId().toString().equals(sbPlayer.getUuid())) {
+                            p.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GOLD + " a rejoint votre île !");
+                        } else {
+                            p.sendMessage(ChatColor.GOLD + "Tu as rejoint l'île : " + ChatColor.YELLOW + island.getName());
+                        }
                     }
                 }
+            } else {
+                player.sendMessage(ChatColor.RED + "Cette île est déjà complète !");
             }
+
         } else {
             player.sendMessage(ChatColor.RED + "Tu n'as reçu aucune invitation !");
         }
@@ -261,6 +266,8 @@ public class IslandCommand extends Command {
                         if (senderMember != null) {
                             if (!member.getMemberType().equals(SBIslandMemberType.LEADER)) {
                                 if (senderMember.getMemberType().getId() < member.getMemberType().getId() && senderMember.getMemberType().getId() <= SBIslandMemberType.MEMBER.getId()) {
+                                    target.closeInventory();
+
                                     this.skyblock.getIslandManager().removeIslandFromRedis(island);
 
                                     island.getMembers().remove(member);
@@ -302,8 +309,8 @@ public class IslandCommand extends Command {
                 final double amount = MoneyUtils.roundMoney(amountString);
 
                 if (sbPlayer.getMoney() >= amount) {
-                    sbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(sbPlayer.getMoney() - amount)));
-                    island.setMoney(MoneyUtils.roundMoney(String.valueOf(island.getMoney() + amount)));
+                    sbPlayer.setMoney(sbPlayer.getMoney() - amount);
+                    island.setMoney(island.getMoney() + amount);
 
                     this.skyblock.getPlayerManager().sendPlayerToRedis(sbPlayer);
                     this.skyblock.getIslandManager().sendIslandToRedis(island);

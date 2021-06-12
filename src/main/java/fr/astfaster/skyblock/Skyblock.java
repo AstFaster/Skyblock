@@ -1,6 +1,7 @@
 package fr.astfaster.skyblock;
 
 import com.mongodb.client.MongoDatabase;
+import fr.astfaster.skyblock.command.BankCommand;
 import fr.astfaster.skyblock.command.IslandCommand;
 import fr.astfaster.skyblock.command.MoneyCommand;
 import fr.astfaster.skyblock.command.PayCommand;
@@ -84,6 +85,7 @@ public class Skyblock extends JavaPlugin {
             commandMap.register("is", new IslandCommand(this));
             commandMap.register("money", new MoneyCommand(this));
             commandMap.register("pay", new PayCommand(this));
+            commandMap.register("bank", new BankCommand(this));
         }
     }
 

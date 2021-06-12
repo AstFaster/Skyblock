@@ -16,8 +16,7 @@ import java.util.*;
 
 public class SBIslandManager {
 
-    public final int maxMembers = 25;
-
+    private final List<String> islandsBankOpen;
     private final List<String> islands;
 
     private final MongoCollection<SBIsland> islandsCollection;
@@ -28,6 +27,7 @@ public class SBIslandManager {
         this.skyblock = skyblock;
         this.islandsCollection = this.skyblock.getSkyblockDatabase().getCollection("islands", SBIsland.class);
         this.islands = new ArrayList<>();
+        this.islandsBankOpen = new ArrayList<>();
     }
 
     /** Manage */
@@ -114,6 +114,7 @@ public class SBIslandManager {
         values.put("name", encoder.encodeToString(island.getName().getBytes()));
         values.put("description", encoder.encodeToString(island.getDescription().getBytes()));
         values.put("money", String.valueOf(island.getMoney()));
+        values.put("bank", island.getBank());
         values.put("createdDate", String.valueOf(island.getCreatedDate()));
 
         return values;
@@ -137,6 +138,7 @@ public class SBIslandManager {
         sbIsland.setName(new String(decoder.decode(values.get("name"))));
         sbIsland.setDescription(new String(decoder.decode(values.get("description"))));
         sbIsland.setMoney(Double.parseDouble(values.get("money")));
+        sbIsland.setBank(values.get("bank"));
         sbIsland.setCreatedDate(Long.parseLong(values.get("createdDate")));
         sbIsland.setMembers(this.getMembersFromValue(membersValues));
 
@@ -151,5 +153,9 @@ public class SBIslandManager {
         }
 
         return members;
+    }
+
+    public List<String> getIslandsBankOpen() {
+        return this.islandsBankOpen;
     }
 }

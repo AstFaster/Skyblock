@@ -46,8 +46,8 @@ public class PayCommand extends Command {
                         final double amount = MoneyUtils.roundMoney(args[1]);
 
                         if (sbPlayer.getMoney() >= amount) {
-                            sbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(sbPlayer.getMoney() - amount)));
-                            targetSbPlayer.setMoney(MoneyUtils.roundMoney(String.valueOf(targetSbPlayer.getMoney() + amount)));
+                            sbPlayer.setMoney(sbPlayer.getMoney() - amount);
+                            targetSbPlayer.setMoney(targetSbPlayer.getMoney() + amount);
 
                             playerManager.sendPlayerToRedis(sbPlayer);
                             playerManager.sendPlayerToRedis(targetSbPlayer);

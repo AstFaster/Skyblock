@@ -36,7 +36,9 @@ public class SBIslandInformationInventory extends SBInventory {
 
         this.addGoBackItem();
 
-        this.setFill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+        this.setFill(new SBItemBuilder(Material.STAINED_GLASS_PANE, 1, 15)
+                .withName(" ")
+                .toItemStack());
     }
 
     private void addNameItem() {
@@ -72,7 +74,7 @@ public class SBIslandInformationInventory extends SBInventory {
     private void addMembersItem() {
         this.setItem(15, new SBItemBuilder(Material.DIAMOND_CHESTPLATE)
                 .withName(ChatColor.YELLOW + "Membres")
-                .withLore(ChatColor.GOLD + String.valueOf(this.island.getMembers().size()))
+                .withLore(ChatColor.GOLD + String.valueOf(this.island.getMembers().size()) + "/25")
                 .toItemStack(),
                 event -> new SBIslandMembersInventory(skyblock, (Player) event.getWhoClicked()).open());
     }

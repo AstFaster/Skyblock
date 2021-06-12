@@ -13,17 +13,19 @@ public class SBIsland {
     private String name;
     private String description;
     private double money;
+    private String bank;
     @BsonProperty(value = "created_date")
     private long createdDate;
     private List<SBIslandMember> members;
 
     public SBIsland() {}
 
-    public SBIsland(String uuid, String name, String description, double money, long createdDate) {
+    public SBIsland(String uuid, String name, String description, double money, String bank, long createdDate) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.money = money;
+        this.bank = bank;
         this.createdDate = createdDate;
         this.members = new ArrayList<>();
     }
@@ -58,6 +60,14 @@ public class SBIsland {
 
     public void setMoney(double money) {
         this.money = money;
+    }
+
+    public String getBank() {
+        return this.bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
     }
 
     public long getCreatedDate() {
