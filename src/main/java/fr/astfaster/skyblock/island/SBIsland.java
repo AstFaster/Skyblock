@@ -1,5 +1,6 @@
 package fr.astfaster.skyblock.island;
 
+import fr.astfaster.skyblock.island.bank.SBBankUpgrade;
 import fr.astfaster.skyblock.island.member.SBIslandMember;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
@@ -14,18 +15,20 @@ public class SBIsland {
     private String description;
     private double money;
     private String bank;
+    private SBBankUpgrade bankUpgrade;
     @BsonProperty(value = "created_date")
     private long createdDate;
     private List<SBIslandMember> members;
 
     public SBIsland() {}
 
-    public SBIsland(String uuid, String name, String description, double money, String bank, long createdDate) {
+    public SBIsland(String uuid, String name, String description, double money, String bank, SBBankUpgrade bankUpgrade, long createdDate) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.money = money;
         this.bank = bank;
+        this.bankUpgrade = bankUpgrade;
         this.createdDate = createdDate;
         this.members = new ArrayList<>();
     }
@@ -68,6 +71,14 @@ public class SBIsland {
 
     public void setBank(String bank) {
         this.bank = bank;
+    }
+
+    public SBBankUpgrade getBankUpgrade() {
+        return this.bankUpgrade;
+    }
+
+    public void setBankUpgrade(SBBankUpgrade bankUpgrade) {
+        this.bankUpgrade = bankUpgrade;
     }
 
     public long getCreatedDate() {

@@ -3,6 +3,7 @@ package fr.astfaster.skyblock.island.inventory;
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.island.SBIsland;
 import fr.astfaster.skyblock.island.bank.SBBankSerializer;
+import fr.astfaster.skyblock.island.bank.SBBankUpgrade;
 import fr.astfaster.skyblock.island.member.SBIslandMember;
 import fr.astfaster.skyblock.island.member.SBIslandMemberType;
 import fr.astfaster.skyblock.player.SBPlayer;
@@ -131,9 +132,9 @@ public class SBCreateIslandInventory extends SBInventory {
 
             player.closeInventory();
 
-            final Inventory bank = Bukkit.createInventory(player, 9, ChatColor.RED + "Banque de l'île");
+            final Inventory bank = Bukkit.createInventory(player, SBBankUpgrade.TIER_1.getSlot(), ChatColor.RED + "Banque de l'île");
             final String bankEncoded = SBBankSerializer.bankToString(bank);
-            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, bankEncoded, System.currentTimeMillis());
+            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, bankEncoded, SBBankUpgrade.TIER_1, System.currentTimeMillis());
             final String islandId = "island-" + UUID.randomUUID().toString().split("-")[0];
 
             island.setUuid(islandId);

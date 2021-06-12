@@ -63,7 +63,7 @@ public class SBIslandInventory extends SBInventory {
     private void addShopItem() {
         this.setItem(22, new SBItemBuilder(Material.EMERALD)
                 .withName(ChatColor.YELLOW + "Shop")
-                .withLore(ChatColor.GOLD + "Vend et achète des ressouces")
+                .withLore(ChatColor.GOLD + "Vend et achète des ressources")
                 .toItemStack(),
                 event -> {});
     }
