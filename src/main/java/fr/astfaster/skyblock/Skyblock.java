@@ -1,13 +1,11 @@
 package fr.astfaster.skyblock;
 
 import com.mongodb.client.MongoDatabase;
-import fr.astfaster.skyblock.command.BankCommand;
-import fr.astfaster.skyblock.command.IslandCommand;
-import fr.astfaster.skyblock.command.MoneyCommand;
-import fr.astfaster.skyblock.command.PayCommand;
+import fr.astfaster.skyblock.command.*;
 import fr.astfaster.skyblock.configuration.SBConfiguration;
 import fr.astfaster.skyblock.configuration.SBConfigurationManager;
 import fr.astfaster.skyblock.island.SBIslandManager;
+import fr.astfaster.skyblock.island.boss.SBBossManager;
 import fr.astfaster.skyblock.listener.PlayerListener;
 import fr.astfaster.skyblock.mongodb.MongoDBConnection;
 import fr.astfaster.skyblock.player.SBPlayerManager;
@@ -15,6 +13,7 @@ import fr.astfaster.skyblock.redis.RedisConnection;
 import fr.astfaster.skyblock.util.inventory.SBInventoryManager;
 import fr.astfaster.skyblock.util.item.SBItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,10 +37,14 @@ public class Skyblock extends JavaPlugin {
 
     /** Island */
     private SBIslandManager islandManager;
+    private SBBossManager bossManager;
 
     /** Util */
     private SBItemManager itemManager;
     private SBInventoryManager inventoryManager;
+
+    /** Spawn */
+    private Location spawnLocation;
 
     public void onEnable() {
         this.configurationManager = new SBConfigurationManager(this, true);
@@ -55,9 +58,12 @@ public class Skyblock extends JavaPlugin {
         this.playerManager = new SBPlayerManager(this);
 
         this.islandManager = new SBIslandManager(this);
+        this.bossManager = new SBBossManager(this);
 
         this.itemManager = new SBItemManager(this);
         this.inventoryManager = new SBInventoryManager(this);
+
+        this.spawnLocation = new Location(Bukkit.getWorld("world"), this.configuration.getSpawnConfiguration().getX(), this.configuration.getSpawnConfiguration().getY(), this.configuration.getSpawnConfiguration().getZ());
 
         this.islandManager.loadIslands();
 
@@ -86,6 +92,7 @@ public class Skyblock extends JavaPlugin {
             commandMap.register("money", new MoneyCommand(this));
             commandMap.register("pay", new PayCommand(this));
             commandMap.register("bank", new BankCommand(this));
+            commandMap.register("fight", new FightCommand(this));
         }
     }
 
@@ -123,12 +130,20 @@ public class Skyblock extends JavaPlugin {
         return this.islandManager;
     }
 
+    public SBBossManager getBossManager() {
+        return this.bossManager;
+    }
+
     public SBItemManager getItemManager() {
         return this.itemManager;
     }
 
     public SBInventoryManager getInventoryManager() {
         return this.inventoryManager;
+    }
+
+    public Location getSpawnLocation() {
+        return this.spawnLocation;
     }
 
 }

@@ -2,8 +2,6 @@ package fr.astfaster.skyblock.player;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.math.BigInteger;
-
 public class SBPlayer {
 
     @BsonProperty(value = "_id")

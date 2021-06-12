@@ -1,4 +1,4 @@
-package fr.astfaster.skyblock.configuration.neested;
+package fr.astfaster.skyblock.configuration.nested;
 
 public class MongoDBConfiguration {
 
