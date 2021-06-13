@@ -65,7 +65,7 @@ public class SBInventory implements InventoryHolder {
     }
 
     public void setVerticalLine(int startSlot, int endSlot, ItemStack itemStack, Consumer<InventoryClickEvent> clickConsumer) {
-        for (int i = startSlot; i <= endSlot; i+= 9) {
+        for (int i = startSlot; i <= endSlot; i += 9) {
             this.setItem(i, itemStack, clickConsumer);
         }
     }
@@ -96,11 +96,13 @@ public class SBInventory implements InventoryHolder {
         this.owner.openInventory(this.inventory);
     }
 
-    protected void update() {}
+    public void update() {}
 
     protected void onOpen(InventoryOpenEvent event){}
 
     protected void onClose(InventoryCloseEvent event){}
+
+    protected void onClick(InventoryClickEvent event){}
 
     @Override
     public Inventory getInventory() {

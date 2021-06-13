@@ -15,6 +15,7 @@ public class SBIsland {
     private String description;
     private double money;
     private String bank;
+    @BsonProperty(value = "bank_upgrade")
     private SBBankUpgrade bankUpgrade;
     @BsonProperty(value = "created_date")
     private long createdDate;

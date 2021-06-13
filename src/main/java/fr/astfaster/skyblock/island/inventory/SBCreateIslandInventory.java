@@ -134,7 +134,7 @@ public class SBCreateIslandInventory extends SBInventory {
 
             final Inventory bank = Bukkit.createInventory(player, SBBankUpgrade.TIER_1.getSlot(), ChatColor.RED + "Banque de l'île");
             final String bankEncoded = SBBankSerializer.bankToString(bank);
-            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, bankEncoded, SBBankUpgrade.TIER_1, System.currentTimeMillis());
+            final SBIsland island = new SBIsland("", this.islandName, this.islandDescription , 0.0F, bankEncoded, SBBankUpgrade.TIER_0, System.currentTimeMillis());
             final String islandId = "island-" + UUID.randomUUID().toString().split("-")[0];
 
             island.setUuid(islandId);

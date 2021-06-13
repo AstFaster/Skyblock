@@ -13,7 +13,7 @@ public class RedisConnection {
         config.setJmxEnabled(false);
         config.setMaxTotal(-1);
 
-        this.jedisPool = new JedisPool(config, host, port, 300, password);
+        this.jedisPool = new JedisPool(config, host, port, 2000, password);
     }
 
     public Jedis getJedis() {

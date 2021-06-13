@@ -2,9 +2,9 @@ package fr.astfaster.skyblock.island.inventory;
 
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.player.SBPlayer;
+import fr.astfaster.skyblock.shop.inventory.SBShopChooseCategoryInventory;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.SBItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -65,7 +65,7 @@ public class SBIslandInventory extends SBInventory {
                 .withName(ChatColor.YELLOW + "Shop")
                 .withLore(ChatColor.GOLD + "Vend et achète des ressources")
                 .toItemStack(),
-                event -> {});
+                event -> new SBShopChooseCategoryInventory(this.skyblock, (Player) event.getWhoClicked()).open());
     }
 
     private void addBankItem() {

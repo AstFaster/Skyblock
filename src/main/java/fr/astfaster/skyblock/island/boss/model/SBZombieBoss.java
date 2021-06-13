@@ -86,12 +86,4 @@ public class SBZombieBoss extends SBBossEntity {
         }.runTaskLaterAsynchronously(this.skyblock, 100L);
     }
 
-    @Override
-    protected void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player) {
-            final Player player = (Player) event.getDamager();
-            player.sendMessage("Boss health : " + ((LivingEntity) event.getEntity()).getHealth());
-        }
-    }
-
 }

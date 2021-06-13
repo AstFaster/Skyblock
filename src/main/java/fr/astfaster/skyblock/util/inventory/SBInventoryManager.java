@@ -22,6 +22,8 @@ public class SBInventoryManager implements Listener {
 
             event.setCancelled(inventory.isCancelClickEvent());
 
+            inventory.onClick(event);
+
             if (inventory.getClickConsumers().containsKey(clickedSlot)) {
                 inventory.getClickConsumers().get(clickedSlot).accept(event);
             }

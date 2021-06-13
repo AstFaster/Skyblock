@@ -47,11 +47,7 @@ public class SBBossManager {
     public void start() {
         this.playing = true;
 
-        for (Player player : this.players) {
-            if (player.isOnline()) {
-                player.sendMessage(ChatColor.GOLD + "Le combat commence !");
-            }
-        }
+        this.sendMessageToPlayers(ChatColor.GOLD + "Le combat commence !");
 
         if (this.checkOnlinePlayers()) {
             this.teleportPlayers();
@@ -87,22 +83,48 @@ public class SBBossManager {
     }
 
     private void teleportPlayers() {
+        final BossConfiguration bossConfiguration = this.skyblock.getConfiguration().getBossConfiguration();
+
+        this.sendMessageToPlayers(ChatColor.GOLD + "Téléportation...");
+
         for (Player player : this.players) {
             if (player.isOnline()) {
-                player.sendMessage(ChatColor.GOLD + "Téléportation...");
-
-                final BossConfiguration bossConfiguration = this.skyblock.getConfiguration().getBossConfiguration();
-
                 player.teleport(new Location(player.getWorld(), bossConfiguration.getArenaX(), bossConfiguration.getArenaY(), bossConfiguration.getArenaZ()));
             }
         }
     }
 
     private void spawnBoss() {
-        final SBBossEntity entity = this.boss.getEntity();
+        new BukkitRunnable() {
+            int timeRemaining = 5;
 
-        entity.setSkyblock(this.skyblock);
-        entity.spawn(Bukkit.getWorld("world"));
+            @Override
+            public void run() {
+                if (timeRemaining != 0) {
+                    final String secondsFormat = this.timeRemaining == 1 ? " seconde" : " secondes";
+
+                    sendMessageToPlayers(ChatColor.GOLD + "Le boss va apparaître dans " + ChatColor.RED + this.timeRemaining + ChatColor.GOLD + secondsFormat + " !");
+
+                    this.timeRemaining--;
+                } else {
+                    final SBBossEntity entity = boss.getEntity();
+
+                    entity.setSkyblock(skyblock);
+                    entity.spawn(Bukkit.getWorld("world"));
+
+                    sendMessageToPlayers(ChatColor.RED + "Le boss est apparu ! Bonne chance !");
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(this.skyblock, 0, 20L);
+    }
+
+    private void sendMessageToPlayers(String message) {
+        for (Player player : this.players) {
+            if (player.isOnline()) {
+                player.sendMessage(message);
+            }
+        }
     }
 
     public List<Player> getPlayers() {

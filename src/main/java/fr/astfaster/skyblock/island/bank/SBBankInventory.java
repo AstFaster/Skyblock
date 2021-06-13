@@ -26,7 +26,7 @@ public class SBBankInventory extends SBInventory {
 
     @Override
     protected void onOpen(InventoryOpenEvent event) {
-        this.skyblock.getIslandManager().getIslandsBankOpen().add(this.island.getUuid());
+        this.skyblock.getIslandManager().getIslandsBankOpen().put(this.island.getUuid(), this.getOwner());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SBBankInventory extends SBInventory {
     }
 
     public static SBBankInventory buildFromInventory(Skyblock skyblock, SBIsland island, Inventory inventory) {
-        final SBBankInventory bank = new SBBankInventory(skyblock, island, null, inventory.getName(), inventory.getSize());
+        final SBBankInventory bank = new SBBankInventory(skyblock, island, null, inventory.getName(), island.getBankUpgrade().getSlot());
 
         for (int i = 0; i < inventory.getSize(); i++) {
             final ItemStack itemStack = inventory.getItem(i);

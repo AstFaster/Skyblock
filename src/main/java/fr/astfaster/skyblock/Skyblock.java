@@ -10,11 +10,13 @@ import fr.astfaster.skyblock.listener.PlayerListener;
 import fr.astfaster.skyblock.mongodb.MongoDBConnection;
 import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.redis.RedisConnection;
+import fr.astfaster.skyblock.shop.SBShopManager;
 import fr.astfaster.skyblock.util.inventory.SBInventoryManager;
 import fr.astfaster.skyblock.util.item.SBItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -39,6 +41,9 @@ public class Skyblock extends JavaPlugin {
     private SBIslandManager islandManager;
     private SBBossManager bossManager;
 
+    /** Shop */
+    private SBShopManager shopManager;
+
     /** Util */
     private SBItemManager itemManager;
     private SBInventoryManager inventoryManager;
@@ -59,6 +64,8 @@ public class Skyblock extends JavaPlugin {
 
         this.islandManager = new SBIslandManager(this);
         this.bossManager = new SBBossManager(this);
+
+        this.shopManager = new SBShopManager(this);
 
         this.itemManager = new SBItemManager(this);
         this.inventoryManager = new SBInventoryManager(this);
@@ -93,11 +100,16 @@ public class Skyblock extends JavaPlugin {
             commandMap.register("pay", new PayCommand(this));
             commandMap.register("bank", new BankCommand(this));
             commandMap.register("fight", new FightCommand(this));
+            commandMap.register("shop", new ShopCommand(this));
         }
     }
 
     @Override
     public void onDisable() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.closeInventory();
+        }
+
         this.playerManager.savePlayers();
         this.islandManager.saveIslands();
     }
@@ -132,6 +144,10 @@ public class Skyblock extends JavaPlugin {
 
     public SBBossManager getBossManager() {
         return this.bossManager;
+    }
+
+    public SBShopManager getShopManager() {
+        return this.shopManager;
     }
 
     public SBItemManager getItemManager() {

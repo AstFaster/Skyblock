@@ -33,7 +33,7 @@ public class BankCommand extends Command {
                 final Inventory inventory = SBBankSerializer.stringToBank(island.getBank());
 
                 if (inventory != null) {
-                    if (!this.skyblock.getIslandManager().getIslandsBankOpen().contains(island.getUuid())) {
+                    if (!this.skyblock.getIslandManager().getIslandsBankOpen().containsKey(island.getUuid())) {
                         final SBBankInventory bank = SBBankInventory.buildFromInventory(this.skyblock, island, inventory);
 
                         player.openInventory(bank.getInventory());

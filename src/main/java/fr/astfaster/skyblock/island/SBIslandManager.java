@@ -6,17 +6,19 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import fr.astfaster.skyblock.Skyblock;
+import fr.astfaster.skyblock.island.bank.SBBankUpgrade;
 import fr.astfaster.skyblock.island.member.SBIslandMember;
 import fr.astfaster.skyblock.island.member.SBIslandMemberType;
 import fr.astfaster.skyblock.util.References;
 import org.bson.Document;
+import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
 public class SBIslandManager {
 
-    private final List<String> islandsBankOpen;
+    private final Map<String, Player> islandsBankOpen;
     private final List<String> islands;
 
     private final MongoCollection<SBIsland> islandsCollection;
@@ -27,7 +29,7 @@ public class SBIslandManager {
         this.skyblock = skyblock;
         this.islandsCollection = this.skyblock.getSkyblockDatabase().getCollection("islands", SBIsland.class);
         this.islands = new ArrayList<>();
-        this.islandsBankOpen = new ArrayList<>();
+        this.islandsBankOpen = new HashMap<>();
     }
 
     /** Manage */
@@ -115,6 +117,7 @@ public class SBIslandManager {
         values.put("description", encoder.encodeToString(island.getDescription().getBytes()));
         values.put("money", String.valueOf(island.getMoney()));
         values.put("bank", island.getBank());
+        values.put("bank_upgrade", island.getBankUpgrade().name());
         values.put("createdDate", String.valueOf(island.getCreatedDate()));
 
         return values;
@@ -139,6 +142,7 @@ public class SBIslandManager {
         sbIsland.setDescription(new String(decoder.decode(values.get("description"))));
         sbIsland.setMoney(Double.parseDouble(values.get("money")));
         sbIsland.setBank(values.get("bank"));
+        sbIsland.setBankUpgrade(SBBankUpgrade.valueOf(values.get("bank_upgrade")));
         sbIsland.setCreatedDate(Long.parseLong(values.get("createdDate")));
         sbIsland.setMembers(this.getMembersFromValue(membersValues));
 
@@ -155,7 +159,7 @@ public class SBIslandManager {
         return members;
     }
 
-    public List<String> getIslandsBankOpen() {
+    public Map<String, Player> getIslandsBankOpen() {
         return this.islandsBankOpen;
     }
 }
