@@ -3,8 +3,8 @@ package fr.astfaster.skyblock.command;
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.island.SBIsland;
 import fr.astfaster.skyblock.island.bank.SBBankInventory;
-import fr.astfaster.skyblock.island.bank.SBBankSerializer;
 import fr.astfaster.skyblock.player.SBPlayer;
+import fr.astfaster.skyblock.util.SerializerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,7 +30,7 @@ public class BankCommand extends Command {
 
             if (!sbPlayer.getIsland().isEmpty()) {
                 final SBIsland island = this.skyblock.getIslandManager().getIslandFromRedis(sbPlayer.getIsland());
-                final Inventory inventory = SBBankSerializer.stringToBank(island.getBank());
+                final Inventory inventory = SerializerUtils.stringToInventory(island.getBank());
 
                 if (inventory != null) {
                     if (!this.skyblock.getIslandManager().getIslandsBankOpen().containsKey(island.getUuid())) {

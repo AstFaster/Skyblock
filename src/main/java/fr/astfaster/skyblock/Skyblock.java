@@ -7,6 +7,7 @@ import fr.astfaster.skyblock.configuration.SBConfigurationManager;
 import fr.astfaster.skyblock.island.SBIslandManager;
 import fr.astfaster.skyblock.island.boss.SBBossManager;
 import fr.astfaster.skyblock.listener.PlayerListener;
+import fr.astfaster.skyblock.market.SBMarketManager;
 import fr.astfaster.skyblock.mongodb.MongoDBConnection;
 import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.redis.RedisConnection;
@@ -44,6 +45,9 @@ public class Skyblock extends JavaPlugin {
     /** Shop */
     private SBShopManager shopManager;
 
+    /** Market */
+    private SBMarketManager marketManager;
+
     /** Util */
     private SBItemManager itemManager;
     private SBInventoryManager inventoryManager;
@@ -67,12 +71,15 @@ public class Skyblock extends JavaPlugin {
 
         this.shopManager = new SBShopManager(this);
 
+        this.marketManager = new SBMarketManager(this);
+
         this.itemManager = new SBItemManager(this);
         this.inventoryManager = new SBInventoryManager(this);
 
         this.spawnLocation = new Location(Bukkit.getWorld("world"), this.configuration.getSpawnConfiguration().getX(), this.configuration.getSpawnConfiguration().getY(), this.configuration.getSpawnConfiguration().getZ());
 
         this.islandManager.loadIslands();
+        this.marketManager.loadItems();
 
         this.registerListeners();
         this.registerCommands();
@@ -101,6 +108,7 @@ public class Skyblock extends JavaPlugin {
             commandMap.register("bank", new BankCommand(this));
             commandMap.register("fight", new FightCommand(this));
             commandMap.register("shop", new ShopCommand(this));
+            commandMap.register("market", new MarketCommand(this));
         }
     }
 
@@ -112,6 +120,7 @@ public class Skyblock extends JavaPlugin {
 
         this.playerManager.savePlayers();
         this.islandManager.saveIslands();
+        this.marketManager.saveItems();
     }
 
     public SBConfigurationManager getConfigurationManager() {
@@ -148,6 +157,10 @@ public class Skyblock extends JavaPlugin {
 
     public SBShopManager getShopManager() {
         return this.shopManager;
+    }
+
+    public SBMarketManager getMarketManager() {
+        return this.marketManager;
     }
 
     public SBItemManager getItemManager() {

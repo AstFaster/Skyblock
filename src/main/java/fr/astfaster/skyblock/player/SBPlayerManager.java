@@ -123,23 +123,23 @@ public class SBPlayerManager {
 
     public void sendPlayerToRedis(SBPlayer player) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + player.getUuid() + ":";
+        final String hash = References.NAME.toLowerCase() + ":players:" + player.getUuid() + ":";
 
         jedis.hmset(hash, this.getValuesFromPlayer(player));
     }
 
     public void removePlayerFromRedis(SBPlayer player) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + player.getUuid() + ":";
+        final String hash = References.NAME.toLowerCase() + ":players:" + player.getUuid() + ":";
 
         for (Map.Entry<String, String> entry : this.getValuesFromPlayer(player).entrySet()) jedis.hdel(hash, entry.getKey());
     }
 
     public SBPlayer getPlayerFromRedis(UUID uuid) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + uuid + ":";
+        final String hash = References.NAME.toLowerCase() + ":players:" + uuid + ":";
 
-        return this.getPlayerFromValue(jedis.hgetAll(hash));
+        return this.getPlayerFromValues(jedis.hgetAll(hash));
     }
 
     private Map<String, String> getValuesFromPlayer(SBPlayer player) {
@@ -153,7 +153,7 @@ public class SBPlayerManager {
         return values;
     }
 
-    private SBPlayer getPlayerFromValue(Map<String, String> values) {
+    private SBPlayer getPlayerFromValues(Map<String, String> values) {
         return new SBPlayer(values.get("uuid"), values.get("name"), values.get("island"), Double.parseDouble(values.get("money")));
     }
 

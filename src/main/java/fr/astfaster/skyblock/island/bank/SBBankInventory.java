@@ -4,6 +4,7 @@ import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.island.SBIsland;
 import fr.astfaster.skyblock.island.SBIslandManager;
 import fr.astfaster.skyblock.player.SBPlayer;
+import fr.astfaster.skyblock.util.SerializerUtils;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -32,7 +33,7 @@ public class SBBankInventory extends SBInventory {
     @Override
     protected void onClose(InventoryCloseEvent event) {
         final SBIslandManager islandManager = this.skyblock.getIslandManager();
-        final String bank = SBBankSerializer.bankToString(event.getInventory());
+        final String bank = SerializerUtils.inventoryToString(event.getInventory());
         final SBPlayer player = this.skyblock.getPlayerManager().getPlayerFromRedis(event.getPlayer().getUniqueId());
 
         if (player.getIsland().equals(this.island.getUuid())) {

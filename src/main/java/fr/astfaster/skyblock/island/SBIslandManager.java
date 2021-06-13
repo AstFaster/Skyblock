@@ -87,7 +87,7 @@ public class SBIslandManager {
 
     public void sendIslandToRedis(SBIsland island) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + island.getUuid() + ":";
+        final String hash = References.NAME.toLowerCase() + ":islands:" + island.getUuid() + ":";
 
         jedis.hmset(hash, this.getValuesFromIsland(island));
         jedis.hmset(hash + "members:", this.getMembersValuesFromIsland(island));
@@ -95,7 +95,7 @@ public class SBIslandManager {
 
     public void removeIslandFromRedis(SBIsland island) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + island.getUuid() + ":";
+        final String hash = References.NAME.toLowerCase() + ":islands:" + island.getUuid() + ":";
 
         for (Map.Entry<String, String> entry : this.getValuesFromIsland(island).entrySet()) jedis.hdel(hash, entry.getKey());
         for (Map.Entry<String, String> entry : this.getMembersValuesFromIsland(island).entrySet()) jedis.hdel(hash + "members:", entry.getKey());
@@ -103,7 +103,7 @@ public class SBIslandManager {
 
     public SBIsland getIslandFromRedis(String uuid) {
         final Jedis jedis = this.skyblock.getRedisConnection().getJedis();
-        final String hash = References.NAME.toLowerCase() + ":" + uuid + ":";
+        final String hash = References.NAME.toLowerCase() + ":islands:" + uuid + ":";
 
         return this.getIslandFromValue(jedis.hgetAll(hash), jedis.hgetAll(hash + "members:"));
     }
@@ -118,7 +118,7 @@ public class SBIslandManager {
         values.put("money", String.valueOf(island.getMoney()));
         values.put("bank", island.getBank());
         values.put("bank_upgrade", island.getBankUpgrade().name());
-        values.put("createdDate", String.valueOf(island.getCreatedDate()));
+        values.put("created_date", String.valueOf(island.getCreatedDate()));
 
         return values;
     }
@@ -143,13 +143,13 @@ public class SBIslandManager {
         sbIsland.setMoney(Double.parseDouble(values.get("money")));
         sbIsland.setBank(values.get("bank"));
         sbIsland.setBankUpgrade(SBBankUpgrade.valueOf(values.get("bank_upgrade")));
-        sbIsland.setCreatedDate(Long.parseLong(values.get("createdDate")));
-        sbIsland.setMembers(this.getMembersFromValue(membersValues));
+        sbIsland.setCreatedDate(Long.parseLong(values.get("created_date")));
+        sbIsland.setMembers(this.getMembersFromValues(membersValues));
 
         return sbIsland;
     }
 
-    private List<SBIslandMember> getMembersFromValue(Map<String, String> values) {
+    private List<SBIslandMember> getMembersFromValues(Map<String, String> values) {
         final List<SBIslandMember> members = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : values.entrySet()) {
