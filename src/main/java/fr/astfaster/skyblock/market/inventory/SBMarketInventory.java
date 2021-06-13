@@ -8,8 +8,10 @@ import fr.astfaster.skyblock.shop.SBShopManager;
 import fr.astfaster.skyblock.util.SerializerUtils;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.SBItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -19,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class SBMarketInventory extends SBInventory {
 
@@ -45,11 +48,15 @@ public class SBMarketInventory extends SBInventory {
 
             if (itemStack != null) {
                 final ItemMeta itemMeta = itemStack.getItemMeta();
+                final OfflinePlayer seller = Bukkit.getOfflinePlayer(UUID.fromString(item.getOwnerUuid()));
 
                 itemMeta.setLore(Arrays.asList(
                         " ",
                         ChatColor.GRAY + "Prix d'achat :",
                         ChatColor.GOLD + "" + item.getBuyingPrice() + "$",
+                        " ",
+                        ChatColor.GRAY + "Vendeur :",
+                        ChatColor.GOLD + "" + seller.getName(),
                         " ",
                         ChatColor.YELLOW + "Clique pour acheter !")
                 );
@@ -101,7 +108,13 @@ public class SBMarketInventory extends SBInventory {
                 final SBMarketManager marketManager = this.skyblock.getMarketManager();
                 final SBMarketItem item = marketManager.getItemByStack(itemStack);
 
-                new SBConfirmBuyInventory(this.skyblock, item, player).open();
+                if (item != null) {
+                    if (player != Bukkit.getPlayer(UUID.fromString(item.getOwnerUuid()))) {
+                        new SBConfirmBuyInventory(this.skyblock, item, player).open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Vous ne pouvez pas acheter votre propre item !");
+                    }
+                }
             }
         }
     }

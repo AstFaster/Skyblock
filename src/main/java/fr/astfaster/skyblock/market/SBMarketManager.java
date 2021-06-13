@@ -12,16 +12,15 @@ import fr.astfaster.skyblock.player.SBPlayerManager;
 import fr.astfaster.skyblock.util.References;
 import fr.astfaster.skyblock.util.SerializerUtils;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SBMarketManager {
 
@@ -68,11 +67,14 @@ public class SBMarketManager {
         final SBPlayerManager playerManager = this.skyblock.getPlayerManager();
         final SBPlayer sbPlayer = playerManager.getPlayerFromRedis(player.getUniqueId());
         final ItemStack itemStack = SerializerUtils.stringToItemStack(item.getItemStack());
+        final UUID sellerUuid = UUID.fromString(item.getOwnerUuid());
+        final OfflinePlayer seller = Bukkit.getOfflinePlayer(sellerUuid);
 
         if (sbPlayer.getMoney() >= item.getBuyingPrice()) {
             if (itemStack != null) {
                 if (!this.hasInventoryFull(player)) {
                     final int amount = itemStack.getAmount();
+
                     sbPlayer.setMoney(sbPlayer.getMoney() - item.getBuyingPrice());
 
                     this.items.remove(item.getUuid());
@@ -80,6 +82,29 @@ public class SBMarketManager {
                     player.getInventory().addItem(itemStack);
 
                     playerManager.sendPlayerToRedis(sbPlayer);
+
+                    if (seller.isOnline()) {
+                        final SBPlayer sellerSbPlayer = playerManager.getPlayerFromRedis(sellerUuid);
+
+                        sellerSbPlayer.setMoney(sellerSbPlayer.getMoney() + item.getBuyingPrice());
+
+                        playerManager.sendPlayerToRedis(sellerSbPlayer);
+
+                        seller.getPlayer().sendMessage(ChatColor.RED + player.getName() +
+                                ChatColor.GOLD + " vient d'acheter " +
+                                ChatColor.RED + itemStack.getType().name() +
+                                ChatColor.GRAY + " x" + amount +
+                                ChatColor.GOLD + " pour " +
+                                ChatColor.RED + item.getBuyingPrice() + "$" +
+                                ChatColor.GOLD + "."
+                        );
+                    } else {
+                        final SBPlayer sellerSbPlayer = playerManager.getPlayerFromMongo(sellerUuid);
+
+                        sellerSbPlayer.setMoney(sellerSbPlayer.getMoney() + item.getBuyingPrice());
+
+                        playerManager.updatePlayerInMongo(sellerSbPlayer);
+                    }
 
                     this.removeItemFromRedis(item);
                     this.removeItemFromMongo(item.getUuid());
@@ -213,7 +238,7 @@ public class SBMarketManager {
         values.put("uuid", item.getUuid());
         values.put("item_stack", item.getItemStack());
         values.put("buying_price", String.valueOf(item.getBuyingPrice()));
-        values.put("owner_uuid", item.getUuid());
+        values.put("owner_uuid", item.getOwnerUuid());
 
         return values;
     }

@@ -3,6 +3,7 @@ package fr.astfaster.skyblock.market.inventory;
 import fr.astfaster.skyblock.Skyblock;
 import fr.astfaster.skyblock.market.SBMarketItem;
 import fr.astfaster.skyblock.market.SBMarketManager;
+import fr.astfaster.skyblock.util.MoneyUtils;
 import fr.astfaster.skyblock.util.SerializerUtils;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.ItemColor;
@@ -32,7 +33,7 @@ public class SBConfirmSellInventory extends SBInventory {
 
         final SBMarketManager marketManager = this.skyblock.getMarketManager();
 
-        this.sellPrice = item.getBuyingPrice() * marketManager.getPercentage();
+        this.sellPrice = MoneyUtils.roundMoney(String.valueOf(item.getBuyingPrice() * marketManager.getPercentage()));
 
         this.addSellInformationItem();
 

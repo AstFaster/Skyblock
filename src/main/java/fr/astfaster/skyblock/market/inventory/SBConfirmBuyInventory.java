@@ -7,12 +7,15 @@ import fr.astfaster.skyblock.util.SerializerUtils;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
 import fr.astfaster.skyblock.util.item.ItemColor;
 import fr.astfaster.skyblock.util.item.SBItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class SBConfirmBuyInventory extends SBInventory {
@@ -49,6 +52,7 @@ public class SBConfirmBuyInventory extends SBInventory {
 
     private void addBuyInformationItem() {
         final ItemStack itemStack = SerializerUtils.stringToItemStack(this.item.getItemStack());
+        final OfflinePlayer seller = Bukkit.getOfflinePlayer(UUID.fromString(this.item.getOwnerUuid()));
 
         if (itemStack != null) {
             this.setItem(13, new SBItemBuilder(itemStack.clone())
@@ -56,7 +60,8 @@ public class SBConfirmBuyInventory extends SBInventory {
                     .withLore(
                             " ",
                             ChatColor.YELLOW + "Item : " + ChatColor.GOLD + itemStack.getType().name() + ChatColor.GRAY + " x" + itemStack.getAmount(),
-                            ChatColor.YELLOW + "Prix d'achat : " + ChatColor.GOLD + this.item.getBuyingPrice() + "$"
+                            ChatColor.YELLOW + "Prix d'achat : " + ChatColor.GOLD + this.item.getBuyingPrice() + "$",
+                            ChatColor.YELLOW + "Vendeur : " + ChatColor.GOLD + seller.getName()
                     )
                     .toItemStack());
         }
