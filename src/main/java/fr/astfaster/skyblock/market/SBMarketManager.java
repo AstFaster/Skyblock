@@ -135,27 +135,31 @@ public class SBMarketManager {
         final ItemStack itemStack = SerializerUtils.stringToItemStack(item.getItemStack());
 
         if (itemStack != null) {
-            this.sendItemToRedis(item);
-            this.sendItemToMongo(item);
+            if (sbPlayer.getMoney() >= sellPrice) {
+                this.sendItemToRedis(item);
+                this.sendItemToMongo(item);
 
-            this.items.add(item.getUuid());
+                this.items.add(item.getUuid());
 
-            player.getInventory().setItem(slot, null);
+                player.getInventory().setItem(slot, null);
 
-            sbPlayer.setMoney(sbPlayer.getMoney() - sellPrice);
+                sbPlayer.setMoney(sbPlayer.getMoney() - sellPrice);
 
-            playerManager.sendPlayerToRedis(sbPlayer);
+                playerManager.sendPlayerToRedis(sbPlayer);
 
-            player.sendMessage(ChatColor.GOLD + "Vous avez correctement mis en vente " +
-                    ChatColor.RED + itemStack.getType().name() +
-                    ChatColor.GRAY + " x" + itemStack.getAmount() +
-                    ChatColor.GOLD + " pour " +
-                    ChatColor.RED + item.getBuyingPrice() + "$" +
-                    ChatColor.GOLD + "."
-            );
+                player.sendMessage(ChatColor.GOLD + "Vous avez correctement mis en vente " +
+                        ChatColor.RED + itemStack.getType().name() +
+                        ChatColor.GRAY + " x" + itemStack.getAmount() +
+                        ChatColor.GOLD + " pour " +
+                        ChatColor.RED + item.getBuyingPrice() + "$" +
+                        ChatColor.GOLD + "."
+                );
 
-            for (Player p : this.marketsOpen.keySet()) {
-                this.marketsOpen.get(p).update();
+                for (Player p : this.marketsOpen.keySet()) {
+                    this.marketsOpen.get(p).update();
+                }
+            } else {
+                player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire !");
             }
         }
     }

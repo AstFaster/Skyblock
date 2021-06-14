@@ -1,6 +1,7 @@
 package fr.astfaster.skyblock.island.inventory;
 
 import fr.astfaster.skyblock.Skyblock;
+import fr.astfaster.skyblock.market.inventory.SBMarketInventory;
 import fr.astfaster.skyblock.player.SBPlayer;
 import fr.astfaster.skyblock.shop.inventory.SBShopChooseCategoryInventory;
 import fr.astfaster.skyblock.util.inventory.SBInventory;
@@ -57,7 +58,7 @@ public class SBIslandInventory extends SBInventory {
                 .withName(ChatColor.YELLOW + "Hôtel des ventes")
                 .withLore(ChatColor.GOLD + "Vend et achète des items", ChatColor.GOLD + "aux autres joueurs")
                 .toItemStack(),
-                event -> {});
+                event -> new SBMarketInventory(this.skyblock, (Player) event.getWhoClicked()).open());
     }
 
     private void addShopItem() {

@@ -74,17 +74,21 @@ public class SBShopUpgradesInventory extends SBShopCategoryInventory {
 
             if (island.getBankUpgrade().getId() < upgrade.getId()) {
                 if (island.getBankUpgrade().getId() == upgrade.getId() - 1) {
-                    island.setBankUpgrade(upgrade);
-                    sbPlayer.setMoney(sbPlayer.getMoney() - item.getBuyingPrice());
+                    if (sbPlayer.getMoney() >= item.getBuyingPrice()) {
+                        island.setBankUpgrade(upgrade);
+                        sbPlayer.setMoney(sbPlayer.getMoney() - item.getBuyingPrice());
 
-                    if (islandManager.getIslandsBankOpen().containsKey(island.getUuid())) {
-                        islandManager.getIslandsBankOpen().get(island.getUuid()).closeInventory();
+                        if (islandManager.getIslandsBankOpen().containsKey(island.getUuid())) {
+                            islandManager.getIslandsBankOpen().get(island.getUuid()).closeInventory();
+                        }
+
+                        islandManager.sendIslandToRedis(island);
+                        playerManager.sendPlayerToRedis(sbPlayer);
+
+                        player.sendMessage(ChatColor.GOLD + "Achat effectué avec succès !");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Tu n'as pas l'argent nécessaire !");
                     }
-
-                    islandManager.sendIslandToRedis(island);
-                    playerManager.sendPlayerToRedis(sbPlayer);
-
-                    player.sendMessage(ChatColor.GOLD + "Achat effectué avec succès !");
                 } else {
                     player.sendMessage(ChatColor.RED + "Tu dois d'abord posséder l'amélioration de tier inférieur !");
                 }
